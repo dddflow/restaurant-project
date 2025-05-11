@@ -1,0 +1,16 @@
+services:
+  oracle-xe:
+    image: gvenzl/oracle-xe:21-slim
+    container_name: restaurant_database
+    ports:
+      - "1521:1521"     # db port
+      - "8080:8080"     # APEX 
+    environment:
+      ORACLE_PASSWORD: india
+      APP_USER: dev_user
+      APP_USER_PASSWORD: india
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+
+volumes:
+  oracle-data:
