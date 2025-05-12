@@ -148,3 +148,65 @@ CREATE TABLE DISHES_TO_ORDERS (
     CONSTRAINT fk_dto_orders FOREIGN KEY (order_id) REFERENCES ORDERS(id),
     CONSTRAINT fk_dto_dishes FOREIGN KEY (dish_id) REFERENCES DISHES(id)
 );
+
+-- Insert a new person
+insert into people (id, name, gender, email, phone)
+values (1001, 'Alice Cust', 'F', 'alice.cust@gmail.com', '9999999');
+
+insert into people (id, name, gender, email, phone)
+values (2001, 'Bob Waiter', 'M', 'bob.waiter@gmail.com', '8888888');
+
+insert into people (id, name, gender, email, phone)
+values (3001, 'Vova Sup', 'M', 'vova.sup@gmail.com', '7777777');
+
+-- Insert a new customer
+insert into customers (id, discount)
+values (1001, 15.00);
+
+-- Insert a new waiter
+insert into waiters (id, salary)
+values (2001, 2500.00);
+
+-- Insert a new suppliers
+insert into suppliers (id, term)
+values (3001, 'Paypal');
+
+-- Insert a new category
+insert into categories (id, name)
+values (1, 'Main Course');
+
+-- Insert a new dish
+insert into dishes (id, name, description, price, category_id)
+values (10, 'Spaghetti Carbonara', 'Pasta with bacon and eggs', 12.50, 1);
+
+-- Insert a new ingredients
+insert into ingredients (id, name, unit, quantity)
+values (204, 'Carrot', 'kg', 0);
+
+-- Insert a new deliveries
+insert into deliveries (id, supplier_id, delivered_on, quantity)
+values (4011, 3001, sysdate);
+
+insert into delivered (ingredient_id, delivery_id, unit_number, unit_price)
+values (204, 4011, 20, 1.05);
+
+-- Insert a new table
+insert into tables (id, capacity)
+values (5, 4);
+
+-- Insert the order
+insert into orders (id, customer_id, waiter_id, made_on, tips)
+values (5001, 1001, 2001, sysdate, 3.50);
+
+-- Link the dish to the order
+insert into dishes_to_orders (order_id, dish_id, quantity)
+values (5001, 10, 2);
+
+-- Assign the order to the table
+insert into service (order_id, table_id, status, served_on)
+values (5001, 5, 'Pending', null);
+
+-- Insert a review
+insert into reviews (id, reviewed_on, rating, review)
+values (1001, sysdate, 5, 'Excellent service and delicious food!');
+
