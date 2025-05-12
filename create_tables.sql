@@ -184,7 +184,7 @@ insert into ingredients (id, name, unit, quantity)
 values (204, 'Carrot', 'kg', 0);
 
 -- Insert a new deliveries
-insert into deliveries (id, supplier_id, delivered_on, quantity)
+insert into deliveries (id, supplier_id, delivered_on)
 values (4011, 3001, sysdate);
 
 insert into delivered (ingredient_id, delivery_id, unit_number, unit_price)
@@ -210,3 +210,14 @@ values (5001, 5, 'Pending', null);
 insert into reviews (id, reviewed_on, rating, review)
 values (1001, sysdate, 5, 'Excellent service and delicious food!');
 
+-- Trigger for updating quantity of ingredients after delivery
+CREATE OR REPLACE TRIGGER trg_update_ingredient_quantity
+    AFTER INSERT ON delivered
+    FOR EACH ROW
+BEGIN
+    UPDATE ingredients
+    SET quantity = quantity + :NEW.unit_number
+    WHERE id = :NEW.ingredient_id;
+END;
+/
+COMMIT;
