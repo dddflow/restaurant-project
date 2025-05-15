@@ -149,6 +149,17 @@ CREATE TABLE DISHES_TO_ORDERS (
     CONSTRAINT fk_dto_dishes FOREIGN KEY (dish_id) REFERENCES DISHES(id)
 );
 
+CREATE TABLE DISH_INGREDIENTS (
+    dish_id         NUMBER,
+    ingredient_id   NUMBER,
+    quantity_needed NUMBER(10,2),
+
+    CONSTRAINT pk_dish_ingredients PRIMARY KEY (dish_id, ingredient_id),
+    CONSTRAINT fk_di_dish FOREIGN KEY (dish_id) REFERENCES DISHES(id),
+    CONSTRAINT fk_di_ingredient FOREIGN KEY (ingredient_id) REFERENCES INGREDIENTS(id),
+    CONSTRAINT chk_quantity_positive CHECK (quantity_needed > 0)
+);
+
 -- Insert a new person
 insert into people (id, name, gender, email, phone)
 values (1001, 'Alice Cust', 'F', 'alice.cust@gmail.com', '9999999');
