@@ -164,66 +164,7 @@ CREATE TABLE DISH_INGREDIENTS (
     CONSTRAINT chk_quantity_positive CHECK (quantity_needed > 0)
 );
 
--- Insert a new person
-insert into people (id, name, gender, email, phone)
-values (1001, 'Alice Cust', 'F', 'alice.cust@gmail.com', '9999999');
 
-insert into people (id, name, gender, email, phone)
-values (2001, 'Bob Waiter', 'M', 'bob.waiter@gmail.com', '8888888');
-
-insert into people (id, name, gender, email, phone)
-values (3001, 'Vova Sup', 'M', 'vova.sup@gmail.com', '7777777');
-
--- Insert a new customer
-insert into customers (id, discount)
-values (1001, 15.00);
-
--- Insert a new waiter
-insert into waiters (id, salary)
-values (2001, 2500.00);
-
--- Insert a new suppliers
-insert into suppliers (id, term)
-values (3001, 'Paypal');
-
--- Insert a new category
-insert into categories (id, name)
-values (1, 'Main Course');
-
--- Insert a new dish
-insert into dishes (id, name, description, price, category_id)
-values (10, 'Spaghetti Carbonara', 'Pasta with bacon and eggs', 12.50, 1);
-
--- Insert a new ingredients
-insert into ingredients (id, name, unit, quantity)
-values (204, 'Carrot', 'kg', 0);
-
--- Insert a new deliveries
-insert into deliveries (id, supplier_id, delivered_on)
-values (4011, 3001, sysdate);
-
-insert into delivered (ingredient_id, delivery_id, unit_number, unit_price)
-values (204, 4011, 20, 1.05);
-
--- Insert a new table
-insert into tables (id, capacity)
-values (5, 4);
-
--- Insert the order
-insert into orders (id, customer_id, waiter_id, made_on, tips)
-values (5001, 1001, 2001, sysdate, 3.50);
-
--- Link the dish to the order
-insert into dishes_to_orders (order_id, dish_id, quantity)
-values (5001, 10, 2);
-
--- Assign the order to the table
-insert into service (order_id, table_id, status, served_on)
-values (5001, 5, 'Pending', null);
-
--- Insert a review
-insert into reviews (id, reviewed_on, rating, review)
-values (1001, sysdate, 5, 'Excellent service and delicious food!');
 
 -- Trigger for updating quantity of ingredients after delivery
 CREATE OR REPLACE TRIGGER trg_update_ingredient_quantity
@@ -233,6 +174,23 @@ BEGIN
     UPDATE ingredients
     SET quantity = quantity + :NEW.unit_number
     WHERE id = :NEW.ingredient_id;
+END;
+/
+
+-- Добавить ошибку (либо остановиться на constraint quantity > 0)
+CREATE OR REPLACE TRIGGER trg_subtract_ingredients_on_order
+AFTER INSERT ON DISHES_TO_ORDERS
+FOR EACH ROW
+BEGIN
+    FOR rec IN (
+        SELECT ingredient_id, quantity_needed
+        FROM DISH_INGREDIENTS
+        WHERE dish_id = :NEW.dish_id
+    ) LOOP
+        UPDATE INGREDIENTS
+        SET quantity = quantity - (rec.quantity_needed * :NEW.quantity)
+        WHERE id = rec.ingredient_id;
+    END LOOP;
 END;
 /
 COMMIT;
