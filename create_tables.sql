@@ -5,7 +5,10 @@ CREATE TABLE PEOPLE (
     email   VARCHAR2(100),
     phone   VARCHAR2(20),
 
-    CONSTRAINT pk_people PRIMARY KEY (id)
+    CONSTRAINT pk_people PRIMARY KEY (id),
+    CONSTRAINT uq_people_email UNIQUE (email),
+    CONSTRAINT uq_people_phone UNIQUE (phone),
+    CONSTRAINT chk_people_gender CHECK (gender IN ('M', 'F'))
 );
 
 
@@ -114,7 +117,8 @@ CREATE TABLE SERVICE (
 
     CONSTRAINT pk_service PRIMARY KEY (order_id, table_id),
     CONSTRAINT fk_service_orders FOREIGN KEY (order_id) REFERENCES ORDERS(id),
-    CONSTRAINT fk_service_tables FOREIGN KEY (table_id) REFERENCES TABLES(id)
+    CONSTRAINT fk_service_tables FOREIGN KEY (table_id) REFERENCES TABLES(id),
+    CHECK (status IN ('Pending', 'Served', 'Cancelled'))
 );
 
 
@@ -232,3 +236,5 @@ BEGIN
 END;
 /
 COMMIT;
+
+-- Нужно как будто сделать триггер который будет при добавлении блюда в заказ автоматически вычитать ингридиенты
