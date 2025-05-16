@@ -12,7 +12,7 @@ CREATE TABLE PEOPLE (
 
 CREATE TABLE SUPPLIERS (
     id      NUMBER,
-    term    VARCHAR2(300),
+    term    VARCHAR2(300) NOT NULL,
 
     CONSTRAINT pk_suppliers PRIMARY KEY (id),
     CONSTRAINT fk_suppliers_people FOREIGN KEY (id) REFERENCES PEOPLE(id)
@@ -41,7 +41,7 @@ CREATE TABLE REVIEWS (
    id          NUMBER,
    reviewed_on DATE NOT NULL,
    rating      NUMBER(1) NOT NULL,
-    review      VARCHAR2(255),
+   review      VARCHAR2(255),
 
     CONSTRAINT pk_reviews PRIMARY KEY (id, reviewed_on),
     CONSTRAINT fk_reviews_customers FOREIGN KEY (id) REFERENCES CUSTOMERS(id),
