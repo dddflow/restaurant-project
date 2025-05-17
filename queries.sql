@@ -49,3 +49,11 @@ FROM ingredients
 WHERE id = 201;
 
 -- действительно становиться 14.40
+
+--проверяю новый тригер trg_check_ingredient_stock
+INSERT INTO orders (id, customer_id, waiter_id, made_on, tips)
+VALUES (6003, 1001, 2001, SYSDATE, 2.00);
+
+-- Добавляем 25 карбонары в заказ
+INSERT INTO dishes_to_orders (order_id, dish_id, quantity)
+VALUES (6003, 10, 25);

@@ -176,21 +176,60 @@ END;
 /
 
 -- Добавить ошибку (либо остановиться на constraint quantity > 0)
-CREATE OR REPLACE TRIGGER trg_subtract_ingredients_on_order
-AFTER INSERT ON DISHES_TO_ORDERS
-FOR EACH ROW
+--CREATE OR REPLACE TRIGGER trg_subtract_ingredients_on_order
+--AFTER INSERT ON DISHES_TO_ORDERS
+--FOR EACH ROW
+--BEGIN
+--    FOR rec IN (
+--        SELECT ingredient_id, quantity_needed
+--        FROM DISH_INGREDIENTS
+--        WHERE dish_id = :NEW.dish_id
+--    ) LOOP
+--        UPDATE INGREDIENTS
+--        SET quantity = quantity - (rec.quantity_needed * :NEW.quantity)
+--        WHERE id = rec.ingredient_id;
+--    END LOOP;
+--END;
+--/
+
+-- trigger for checking if there are enough ingredients for a dish and
+-- subtraction of ingredients from the storage after placing an order
+CREATE OR REPLACE TRIGGER trg_process_order
+    BEFORE INSERT ON DISHES_TO_ORDERS
+    FOR EACH ROW
+DECLARE
+    v_available_qty NUMBER;
+    v_needed_qty    NUMBER;
 BEGIN
     FOR rec IN (
         SELECT ingredient_id, quantity_needed
         FROM DISH_INGREDIENTS
         WHERE dish_id = :NEW.dish_id
-    ) LOOP
-        UPDATE INGREDIENTS
-        SET quantity = quantity - (rec.quantity_needed * :NEW.quantity)
-        WHERE id = rec.ingredient_id;
-    END LOOP;
+        ) LOOP
+            SELECT quantity INTO v_available_qty
+            FROM INGREDIENTS
+            WHERE id = rec.ingredient_id;
+
+            v_needed_qty := rec.quantity_needed * :NEW.quantity;
+
+            IF v_available_qty < v_needed_qty THEN
+                RAISE_APPLICATION_ERROR(
+                        -20001,
+                        'Not enough of ingredient ID=' || rec.ingredient_id ||
+                        '. Needed: ' || v_needed_qty || ', available: ' || v_available_qty
+                );
+            END IF;
+
+            -- Вычитание ингредиентов
+            UPDATE INGREDIENTS
+            SET quantity = quantity - v_needed_qty
+            WHERE id = rec.ingredient_id;
+        END LOOP;
 END;
 /
+
+
 COMMIT;
 
 -- Нужно как будто сделать триггер который будет при добавлении блюда в заказ автоматически вычитать ингридиенты
+-- сделано
