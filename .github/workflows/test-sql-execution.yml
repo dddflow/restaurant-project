@@ -1,0 +1,41 @@
+name: ✅ Test SQL Execution on Oracle XE
+
+on:
+  pull_request:
+    paths:
+      - 'sql/**/*.sql'
+
+jobs:
+  test-sql:
+    runs-on: ubuntu-latest
+
+    services:
+      oracle:
+        image: oracleinanutshell/oracle-xe-11g
+        ports:
+          - 1521:1521
+        options: >-
+          --health-cmd "echo 'SELECT 1 FROM dual;' | sqlplus system/oracle@//localhost:1521/XE"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 20
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🕒 Wait for Oracle to initialize
+        run: sleep 40  # Oracle XE поднимается медленно
+
+      - name: 🧪 Run SQL files manually (strict order)
+        run: |
+          docker_id=$(docker ps -q --filter ancestor=oracleinanutshell/oracle-xe-11g)
+
+          echo "🟢 Running: create_tables.sql"
+          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat sql/create_tables.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+
+          echo "🟢 Running: insert_values.sql"
+          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat sql/insert_values.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+
+          echo "🟢 Running: queries.sql"
+          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat sql/queries.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
