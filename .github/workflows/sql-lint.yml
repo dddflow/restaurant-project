@@ -1,0 +1,23 @@
+name: Lint Oracle SQL with SQLFluff
+
+on:
+  pull_request:
+    paths:
+      - '**.sql'
+
+jobs:
+  sql-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+
+      - name: Install SQLFluff
+        run: pip install sqlfluff
+
+      - name: Run SQL Lint
+        run: sqlfluff lint sql/ --dialect oracle
