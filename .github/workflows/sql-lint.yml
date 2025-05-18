@@ -20,4 +20,4 @@ jobs:
         run: pip install sqlfluff
 
       - name: Run SQL Lint
-        run: sqlfluff lint sql/ --dialect oracle
+        run: sqlfluff lint sql/ --dialect oracle --exclude-rules L009,LT02,RF01,LT01

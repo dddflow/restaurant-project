@@ -1,13 +1,11 @@
 [sqlfluff]
 dialect = oracle
-exclude_rules = L009  # отключить правило про табуляцию
+max_line_length = 140
 
-[sqlfluff:rules]
-capitalisation_policy = upper  # все ключевые слова — заглавные
-
-[sqlfluff:rules:L010]  # Capitalisation of keywords
+# Правило: ключевые слова должны быть ЗАГЛАВНЫМИ
+[sqlfluff:rules:capitalisation.keywords]
 capitalisation_policy = upper
 
-[sqlfluff:rules:L014]  # Use of trailing comma in SELECT clause
-extended_capitalisation_policy = upper
-
+# Правило: идентификаторы (имена таблиц, колонок и т.п.)
+[sqlfluff:rules:capitalisation.identifiers]
+capitalisation_policy = upper
