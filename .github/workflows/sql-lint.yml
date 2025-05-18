@@ -2,8 +2,6 @@ name: Lint Oracle SQL with SQLFluff
 
 on:
   pull_request:
-    paths:
-      - '**.sql'
 
 jobs:
   sql-lint:

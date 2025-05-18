@@ -2,8 +2,6 @@ name: Test SQL Execution on Oracle XE
 
 on:
   pull_request:
-    paths:
-      - 'sql/**/*.sql'
 
 jobs:
   test-sql:
