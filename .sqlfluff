@@ -6,8 +6,8 @@ exclude_rules = L009
 
 # Правило: ключевые слова должны быть ЗАГЛАВНЫМИ
 [sqlfluff:rules:capitalisation.keywords]
-capitalisation_policy = lower
+capitalisation_policy = upper
 
 # Правило: идентификаторы (имена таблиц, колонок и т.п.)
 [sqlfluff:rules:capitalisation.identifiers]
-capitalisation_policy = upper
+capitalisation_policy = consistent
