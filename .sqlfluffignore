@@ -1,0 +1,3 @@
+# .sqlfluffignore
+
+drop_tables.sql
