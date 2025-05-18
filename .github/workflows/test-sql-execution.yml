@@ -6,17 +6,15 @@ on:
 jobs:
   test-sql:
     runs-on: ubuntu-latest
-
     services:
       oracle:
         image: gvenzl/oracle-xe:21-slim
         ports:
           - 1521:1521
-        options: >-
-          --health-cmd "echo 'SELECT 1 FROM dual;' | sqlplus system/oracle@//localhost:1521/XE"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 20
+        env:
+          ORACLE_PASSWORD: testpass
+          APP_USER: test
+          APP_USER_PASSWORD: test
 
     steps:
       - name: 📥 Checkout repository
