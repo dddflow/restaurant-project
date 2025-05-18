@@ -1,4 +1,4 @@
-name: ✅ Test SQL Execution on Oracle XE
+name: Test SQL Execution on Oracle XE
 
 on:
   pull_request:
