@@ -10,4 +10,3 @@ capitalisation_policy = upper
 
 [sqlfluff:rules:L014]  # Use of trailing comma in SELECT clause
 extended_capitalisation_policy = upper
-
