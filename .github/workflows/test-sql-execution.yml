@@ -28,14 +28,31 @@ jobs:
           docker_id=$(docker ps -q --filter ancestor=gvenzl/oracle-xe:21-slim)
           docker cp sql/. $docker_id:/sql
 
-      - name: 🧪 Run SQL files manually (strict order)
+      - name: 🧪 Run SQL files manually (strict order, with logging)
         run: |
           docker_id=$(docker ps -q --filter ancestor=gvenzl/oracle-xe:21-slim)
-          echo "🟢 Running: create_tables.sql"
-          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/create_tables.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
 
-          echo "🟢 Running: insert_values.sql"
-          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/insert_values.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+          run_and_log() {
+            SQL_FILE=$1
+            LOG_FILE=/sql/${SQL_FILE%.sql}.log
+            echo "[$(date)] 🟢 Running: $SQL_FILE"
+            docker exec $docker_id bash -c "
+              echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && \
+              cat /sql/$SQL_FILE >> temp.sql && \
+              sqlplus -s system/oracle@XE @temp.sql \
+            " 2>&1 | tee -a ${SQL_FILE%.sql}.log
+            echo "[$(date)] 📝 Log for $SQL_FILE saved to ${SQL_FILE%.sql}.log"
+          }
 
-          echo "🟢 Running: queries.sql"
-          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/queries.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+          run_and_log create_tables.sql
+          run_and_log insert_values.sql
+          run_and_log queries.sql
+
+      - name: 📦 Upload logs as artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: oracle-sql-logs
+          path: |
+            create_tables.log
+            insert_values.log
+            queries.log
