@@ -10,4 +10,4 @@ capitalisation_policy = upper
 
 # Правило: идентификаторы (имена таблиц, колонок и т.п.)
 [sqlfluff:rules:capitalisation.identifiers]
-capitalisation_policy = consistent
+capitalisation_policy = upper

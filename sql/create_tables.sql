@@ -1,177 +1,164 @@
+------------------- TABLES --------------------
 CREATE TABLE PEOPLE (
-    id     NUMBER,
-    name   VARCHAR2(100) NOT NULL,
-    gender CHAR(1) NOT NULL CHECK (gender IN ('M', 'F')),
-    email  VARCHAR2(100) NOT NULL,
-    phone  VARCHAR2(20)  NOT NULL,
-    CONSTRAINT pk_people PRIMARY KEY (id),
-    CONSTRAINT uq_people_email UNIQUE (email),
-    CONSTRAINT uq_people_phone UNIQUE (phone)
+    ID NUMBER,
+    NAME VARCHAR2(100) NOT NULL,
+    GENDER CHAR(1) NOT NULL CONSTRAINT CHK_PEOPLE_GENDER CHECK (GENDER IN ('M', 'F')),
+    EMAIL VARCHAR2(100) NOT NULL,
+    PHONE VARCHAR2(20) NOT NULL,
+    CONSTRAINT PK_PEOPLE PRIMARY KEY (ID),
+    CONSTRAINT UQ_PEOPLE_EMAIL UNIQUE (EMAIL),
+    CONSTRAINT UQ_PEOPLE_PHONE UNIQUE (PHONE)
 );
 
 
 CREATE TABLE SUPPLIERS (
-    id      NUMBER,
-    term    VARCHAR2(300) NOT NULL,
-
-    CONSTRAINT pk_suppliers PRIMARY KEY (id),
-    CONSTRAINT fk_suppliers_people FOREIGN KEY (id) REFERENCES PEOPLE(id)
+    ID NUMBER,
+    TERM VARCHAR2(300) NOT NULL,
+    CONSTRAINT PK_SUPPLIERS PRIMARY KEY (ID),
+    CONSTRAINT FK_SUPPLIERS_PEOPLE FOREIGN KEY (ID) REFERENCES PEOPLE(ID)
 );
 
 
 CREATE TABLE WAITERS (
-    id      NUMBER,
-    salary  NUMBER(10,2) NOT NULL,
-
-    CONSTRAINT pk_waiters PRIMARY KEY (id),
-    CONSTRAINT fk_waiters_people FOREIGN KEY (id) REFERENCES PEOPLE(id)
+    ID NUMBER,
+    SALARY NUMBER(10,2) NOT NULL,
+    CONSTRAINT PK_WAITERS PRIMARY KEY (ID),
+    CONSTRAINT FK_WAITERS_PEOPLE FOREIGN KEY (ID) REFERENCES PEOPLE(ID)
 );
 
 
 CREATE TABLE CUSTOMERS (
-    id          NUMBER,
-    discount    NUMBER(5,2),
-
-    CONSTRAINT pk_customers PRIMARY KEY (id),
-    CONSTRAINT fk_customers_people FOREIGN KEY (id) REFERENCES PEOPLE(id)
+    ID NUMBER,
+    DISCOUNT NUMBER(5,2),
+    CONSTRAINT PK_CUSTOMERS PRIMARY KEY (ID),
+    CONSTRAINT FK_CUSTOMERS_PEOPLE FOREIGN KEY (ID) REFERENCES PEOPLE(ID)
 );
 
 
 CREATE TABLE REVIEWS (
-   id          NUMBER,
-   reviewed_on DATE NOT NULL,
-   rating      NUMBER(1) NOT NULL,
-   review      VARCHAR2(255),
-
-    CONSTRAINT pk_reviews PRIMARY KEY (id, reviewed_on),
-    CONSTRAINT fk_reviews_customers FOREIGN KEY (id) REFERENCES CUSTOMERS(id),
-    CONSTRAINT chk_reviews_rating CHECK (rating BETWEEN 1 AND 5)
+    ID NUMBER,
+    REVIEWED_ON DATE NOT NULL,
+    RATING NUMBER(1) NOT NULL,
+    REVIEW VARCHAR2(255),
+    CONSTRAINT PK_REVIEWS PRIMARY KEY (ID, REVIEWED_ON),
+    CONSTRAINT FK_REVIEWS_CUSTOMERS FOREIGN KEY (ID) REFERENCES CUSTOMERS(ID),
+    CONSTRAINT CHK_REVIEWS_RATING CHECK (RATING BETWEEN 1 AND 5)
 );
 
 
 CREATE TABLE INGREDIENTS (
-    id          NUMBER,
-    name        VARCHAR2(100) NOT NULL,
-    unit        VARCHAR2(20) NOT NULL,
-    quantity    NUMBER(10,2) NOT NULL,
-
-    CONSTRAINT pk_ingredients PRIMARY KEY (id),
-    CONSTRAINT chk_ingredients_quantity_nonnegative CHECK (quantity >= 0)
+    ID NUMBER,
+    NAME VARCHAR2(100) NOT NULL,
+    UNIT VARCHAR2(20) NOT NULL,
+    QUANTITY NUMBER(10,2) NOT NULL,
+    CONSTRAINT PK_INGREDIENTS PRIMARY KEY (ID),
+    CONSTRAINT CHK_INGREDIENTS_QUANTITY_NONNEGATIVE CHECK (QUANTITY >= 0)
 );
 
 
 CREATE TABLE DELIVERIES (
-    id              NUMBER,
-    supplier_id     NUMBER NOT NULL,
-    delivered_on    DATE NOT NULL,
-
-    CONSTRAINT pk_deliveries PRIMARY KEY (id),
-    CONSTRAINT fk_deliveries_suppliers FOREIGN KEY (supplier_id) REFERENCES SUPPLIERS(id)
+    ID NUMBER,
+    SUPPLIER_ID NUMBER NOT NULL,
+    DELIVERED_ON DATE NOT NULL,
+    CONSTRAINT PK_DELIVERIES PRIMARY KEY (ID),
+    CONSTRAINT FK_DELIVERIES_SUPPLIERS FOREIGN KEY (SUPPLIER_ID) REFERENCES SUPPLIERS(ID)
 );
 
 
 CREATE TABLE DELIVERED (
-    ingredient_id   NUMBER NOT NULL,
-    delivery_id     NUMBER NOT NULL,
-    unit_number     NUMBER(10,2) NOT NULL,
-    unit_price      NUMBER(10,2) NOT NULL,
-
-    CONSTRAINT pk_delivered PRIMARY KEY (ingredient_id, delivery_id),
-    CONSTRAINT fk_delivered_ingredients FOREIGN KEY (ingredient_id) REFERENCES INGREDIENTS(id),
-    CONSTRAINT fk_delivered_deliveries FOREIGN KEY (delivery_id) REFERENCES DELIVERIES(id),
-    CONSTRAINT chk_delivered_price_nonnegative CHECK (unit_price >= 0),
-    CONSTRAINT chk_delivered_units_nonnegative CHECK (unit_number >= 0)
+    INGREDIENT_ID NUMBER NOT NULL,
+    DELIVERY_ID NUMBER NOT NULL,
+    UNIT_NUMBER NUMBER(10,2) NOT NULL,
+    UNIT_PRICE NUMBER(10,2) NOT NULL,
+    CONSTRAINT PK_DELIVERED PRIMARY KEY (INGREDIENT_ID, DELIVERY_ID),
+    CONSTRAINT FK_DELIVERED_INGREDIENTS FOREIGN KEY (INGREDIENT_ID) REFERENCES INGREDIENTS(ID),
+    CONSTRAINT FK_DELIVERED_DELIVERIES FOREIGN KEY (DELIVERY_ID) REFERENCES DELIVERIES(ID),
+    CONSTRAINT CHK_DELIVERED_PRICE_NONNEGATIVE CHECK (UNIT_PRICE >= 0),
+    CONSTRAINT CHK_DELIVERED_UNITS_NONNEGATIVE CHECK (UNIT_NUMBER >= 0)
 );
 
 
 CREATE TABLE ORDERS (
-    id          NUMBER,
-    customer_id NUMBER NOT NULL,
-    waiter_id   NUMBER NOT NULL,
-    made_on     DATE NOT NULL,
-    tips        NUMBER(10,2),
-
-    CONSTRAINT pk_orders PRIMARY KEY (id),
-    CONSTRAINT fk_orders_customers FOREIGN KEY (customer_id) REFERENCES CUSTOMERS(id),
-    CONSTRAINT fk_orders_waiters FOREIGN KEY (waiter_id) REFERENCES WAITERS(id),
-    CONSTRAINT chk_orders_tips_nonnegative CHECK (tips >= 0)
+    ID NUMBER,
+    CUSTOMER_ID NUMBER NOT NULL,
+    WAITER_ID NUMBER NOT NULL,
+    MADE_ON DATE NOT NULL,
+    TIPS NUMBER(10,2),
+    CONSTRAINT PK_ORDERS PRIMARY KEY (ID),
+    CONSTRAINT FK_ORDERS_CUSTOMERS FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMERS(ID),
+    CONSTRAINT FK_ORDERS_WAITERS FOREIGN KEY (WAITER_ID) REFERENCES WAITERS(ID),
+    CONSTRAINT CHK_ORDERS_TIPS_NONNEGATIVE CHECK (TIPS >= 0)
 );
 
 
 CREATE TABLE TABLES (
-    id          NUMBER,
-    capacity    NUMBER NOT NULL,
-
-    CONSTRAINT pk_tables PRIMARY KEY (id),
-    CONSTRAINT chk_tables_capacity_positive CHECK (capacity > 0)
+    ID NUMBER,
+    CAPACITY NUMBER NOT NULL,
+    CONSTRAINT PK_TABLES PRIMARY KEY (ID),
+    CONSTRAINT CHK_TABLES_CAPACITY_POSITIVE CHECK (CAPACITY > 0)
 );
 
 
 CREATE TABLE SERVICE (
-    order_id    NUMBER NOT NULL,
-    table_id    NUMBER NOT NULL,
-    status      VARCHAR2(50) NOT NULL,
-    served_on   DATE NOT NULL,
-
-    CONSTRAINT pk_service PRIMARY KEY (order_id, table_id),
-    CONSTRAINT fk_service_orders FOREIGN KEY (order_id) REFERENCES ORDERS(id),
-    CONSTRAINT fk_service_tables FOREIGN KEY (table_id) REFERENCES TABLES(id),
-    CHECK (status IN ('Pending', 'Served', 'Cancelled'))
+    ORDER_ID NUMBER NOT NULL,
+    TABLE_ID NUMBER NOT NULL,
+    STATUS VARCHAR2(50) NOT NULL,
+    SERVED_ON DATE NOT NULL,
+    CONSTRAINT PK_SERVICE PRIMARY KEY (ORDER_ID, TABLE_ID),
+    CONSTRAINT FK_SERVICE_ORDERS FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ID),
+    CONSTRAINT FK_SERVICE_TABLES FOREIGN KEY (TABLE_ID) REFERENCES TABLES(ID),
+    CONSTRAINT CHK_SERVICE_STATUS CHECK (STATUS IN ('Pending', 'Served', 'Cancelled'))
 );
 
 
-create table CATEGORIES (
-    id      NUMBER,
-    name    VARCHAR2(100) NOT NULL,
-
-    CONSTRAINT pk_categories PRIMARY KEY (id)
+CREATE TABLE CATEGORIES (
+    ID NUMBER,
+    NAME VARCHAR2(100) NOT NULL,
+    CONSTRAINT PK_CATEGORIES PRIMARY KEY (ID)
 );
 
 
 CREATE TABLE DISHES (
-    id          NUMBER,
-    name        VARCHAR2(100) NOT NULL,
-    description VARCHAR2(500) NOT NULL,
-    price       NUMBER(6,2) NOT NULL,
-    category_id NUMBER NOT NULL,
-
-    CONSTRAINT pk_dishes PRIMARY KEY (id),
-    CONSTRAINT fk_dishes_category FOREIGN KEY (category_id) REFERENCES CATEGORIES(id),
-    CONSTRAINT chk_dishes_price_positive CHECK (price >= 0)
+    ID NUMBER,
+    NAME VARCHAR2(100) NOT NULL,
+    DESCRIPTION VARCHAR2(500) NOT NULL,
+    PRICE NUMBER(6,2) NOT NULL,
+    CATEGORY_ID NUMBER NOT NULL,
+    CONSTRAINT PK_DISHES PRIMARY KEY (ID),
+    CONSTRAINT FK_DISHES_CATEGORY FOREIGN KEY (CATEGORY_ID) REFERENCES CATEGORIES(ID),
+    CONSTRAINT CHK_DISHES_PRICE_POSITIVE CHECK (PRICE >= 0)
 );
 
 
 CREATE TABLE DISHES_TO_ORDERS (
-    order_id    NUMBER NOT NULL,
-    dish_id     NUMBER NOT NULL,
-    quantity    NUMBER NOT NULL,
-
-    CONSTRAINT pk_dto PRIMARY KEY (order_id, dish_id),
-    CONSTRAINT fk_dto_orders FOREIGN KEY (order_id) REFERENCES ORDERS(id),
-    CONSTRAINT fk_dto_dishes FOREIGN KEY (dish_id) REFERENCES DISHES(id)
+    ORDER_ID NUMBER NOT NULL,
+    DISH_ID NUMBER NOT NULL,
+    QUANTITY NUMBER NOT NULL,
+    CONSTRAINT PK_DTO PRIMARY KEY (ORDER_ID, DISH_ID),
+    CONSTRAINT FK_DTO_ORDERS FOREIGN KEY (ORDER_ID) REFERENCES ORDERS(ID),
+    CONSTRAINT FK_DTO_DISHES FOREIGN KEY (DISH_ID) REFERENCES DISHES(ID)
 );
 
 CREATE TABLE DISH_INGREDIENTS (
-    dish_id         NUMBER NOT NULL,
-    ingredient_id   NUMBER NOT NULL,
-    quantity_needed NUMBER(10,2) NOT NULL,
-
-    CONSTRAINT pk_dish_ingredients PRIMARY KEY (dish_id, ingredient_id),
-    CONSTRAINT fk_di_dish FOREIGN KEY (dish_id) REFERENCES DISHES(id),
-    CONSTRAINT fk_di_ingredient FOREIGN KEY (ingredient_id) REFERENCES INGREDIENTS(id),
-    CONSTRAINT chk_quantity_positive CHECK (quantity_needed > 0)
+    DISH_ID NUMBER NOT NULL,
+    INGREDIENT_ID NUMBER NOT NULL,
+    QUANTITY_NEEDED NUMBER(10,2) NOT NULL,
+    CONSTRAINT PK_DISH_INGREDIENTS PRIMARY KEY (DISH_ID, INGREDIENT_ID),
+    CONSTRAINT FK_DI_DISH FOREIGN KEY (DISH_ID) REFERENCES DISHES(ID),
+    CONSTRAINT FK_DI_INGREDIENT FOREIGN KEY (INGREDIENT_ID) REFERENCES INGREDIENTS(ID),
+    CONSTRAINT CHK_QUANTITY_POSITIVE CHECK (QUANTITY_NEEDED > 0)
 );
 
 
-
+------------------- TRIGGERS --------------------
 -- Trigger for updating quantity of ingredients after delivery
-CREATE OR REPLACE TRIGGER trg_update_ingredient_quantity
-    AFTER INSERT ON delivered
+CREATE OR REPLACE TRIGGER TRG_UPDATE_INGREDIENT_QUANTITY
+    AFTER INSERT ON DELIVERED
     FOR EACH ROW
 BEGIN
-    UPDATE ingredients
-    SET quantity = quantity + :NEW.unit_number
-    WHERE id = :NEW.ingredient_id;
+    UPDATE INGREDIENTS
+    SET QUANTITY = QUANTITY + :NEW.UNIT_NUMBER
+    WHERE ID = :NEW.INGREDIENT_ID;
 END;
 /
 
@@ -194,41 +181,37 @@ END;
 
 -- trigger for checking if there are enough ingredients for a dish and
 -- subtraction of ingredients from the storage after placing an order
-CREATE OR REPLACE TRIGGER trg_process_order
+CREATE OR REPLACE TRIGGER TRG_PROCESS_ORDER
     BEFORE INSERT ON DISHES_TO_ORDERS
     FOR EACH ROW
 DECLARE
-    v_available_qty NUMBER;
-    v_needed_qty    NUMBER;
+    V_AVAILABLE_QTY NUMBER;
+    V_NEEDED_QTY NUMBER;
 BEGIN
-    FOR rec IN (
-        SELECT ingredient_id, quantity_needed
+    FOR REC IN (
+        SELECT INGREDIENT_ID, QUANTITY_NEEDED
         FROM DISH_INGREDIENTS
-        WHERE dish_id = :NEW.dish_id
-        ) LOOP
-            SELECT quantity INTO v_available_qty
-            FROM INGREDIENTS
-            WHERE id = rec.ingredient_id;
+        WHERE DISH_ID = :NEW.DISH_ID
+    ) LOOP
+        SELECT QUANTITY INTO V_AVAILABLE_QTY
+        FROM INGREDIENTS
+        WHERE ID = REC.INGREDIENT_ID;
 
-            v_needed_qty := rec.quantity_needed * :NEW.quantity;
+        V_NEEDED_QTY := REC.QUANTITY_NEEDED * :NEW.QUANTITY;
 
-            IF v_available_qty < v_needed_qty THEN
-                RAISE_APPLICATION_ERROR(
-                        -20001,
-                        'Not enough of ingredient ID=' || rec.ingredient_id ||
-                        '. Needed: ' || v_needed_qty || ', available: ' || v_available_qty
-                );
-            END IF;
+        IF V_AVAILABLE_QTY < V_NEEDED_QTY THEN
+            RAISE_APPLICATION_ERROR(
+                -20001,
+                'Not enough of ingredient ID=' || REC.INGREDIENT_ID ||
+                '. Needed: ' || V_NEEDED_QTY || ', available: ' || V_AVAILABLE_QTY
+            );
+        END IF;
 
-            -- Вычитание ингредиентов
-            UPDATE INGREDIENTS
-            SET quantity = quantity - v_needed_qty
-            WHERE id = rec.ingredient_id;
-        END LOOP;
+        -- Вычитание ингредиентов
+        UPDATE INGREDIENTS
+        SET QUANTITY = QUANTITY - V_NEEDED_QTY
+        WHERE ID = REC.INGREDIENT_ID;
+    END LOOP;
 END;
 
-
 COMMIT;
-
--- Нужно как будто сделать триггер который будет при добавлении блюда в заказ автоматически вычитать ингридиенты
--- сделано
