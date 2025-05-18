@@ -1,3 +1,4 @@
 # .sqlfluffignore
 
 drop_tables.sql
+truncate_tables.sql
