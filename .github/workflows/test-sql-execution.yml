@@ -36,8 +36,7 @@ jobs:
             SQL_FILE=$1
             LOG_FILE=/sql/${SQL_FILE%.sql}.log
             echo "[$(date)] 🟢 Running: $SQL_FILE"
-            docker exec $docker_id bash -c "
-              echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && \
+            docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/create_tables.sql >> temp.sql && sqlplus test/test@XE @temp.sql"              echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && \
               cat /sql/$SQL_FILE >> temp.sql && \
               sqlplus -s system/oracle@XE @temp.sql \
             " 2>&1 | tee -a ${SQL_FILE%.sql}.log
