@@ -1,0 +1,58 @@
+name: Test SQL Execution on Oracle XE
+
+on:
+  pull_request:
+
+jobs:
+  test-sql:
+    runs-on: ubuntu-latest
+    services:
+      oracle:
+        image: gvenzl/oracle-xe:21-slim
+        ports:
+          - 1521:1521
+        env:
+          ORACLE_PASSWORD: testpass
+          APP_USER: test
+          APP_USER_PASSWORD: test
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🕒 Wait for Oracle to initialize
+        run: sleep 40  # Oracle XE поднимается медленно
+
+      - name: 📥 Copy SQL files into container
+        run: |
+          docker_id=$(docker ps -q --filter ancestor=gvenzl/oracle-xe:21-slim)
+          docker cp sql/. $docker_id:/sql
+
+      - name: 🧪 Run SQL files manually (strict order, with logging)
+        run: |
+          docker_id=$(docker ps -q --filter ancestor=gvenzl/oracle-xe:21-slim)
+
+          run_and_log() {
+            SQL_FILE=$1
+            LOG_FILE="${SQL_FILE%.sql}.log"
+            echo "[$(date)] 🟢 Running: $SQL_FILE"
+            docker exec $docker_id bash -c '
+              echo "WHENEVER SQLERROR EXIT SQL.SQLCODE;" > temp.sql
+              cat /sql/'$SQL_FILE' >> temp.sql
+              sqlplus -s system/testpass@XE @temp.sql
+            ' 2>&1 | tee -a $LOG_FILE
+            echo "[$(date)] 📝 Log for $SQL_FILE saved to $LOG_FILE"
+          }
+
+          run_and_log create_tables.sql
+          run_and_log insert_values.sql
+          run_and_log queries.sql
+
+      - name: 📦 Upload logs as artifact
+        uses: actions/upload-artifact@v4.3.1
+        with:
+          name: oracle-sql-logs
+          path: |
+            create_tables.log
+            insert_values.log
+            queries.log
