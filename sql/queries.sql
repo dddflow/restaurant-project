@@ -1,7 +1,7 @@
 -- All dishes with the corresponding category and name
 SELECT
-    D.DISH_NAME AS dish_name,
-    C.CATEGORY_NAME AS category,
+    D.DISH_NAME,
+    C.CATEGORY_NAME,
     D.PRICE
 FROM DISHES D
 INNER JOIN CATEGORIES C ON D.CATEGORY_ID = C.ID;
@@ -15,7 +15,7 @@ INNER JOIN PEOPLE P ON C.ID = P.ID;
 
 -- Orders
 SELECT
-    ID AS order_id,
+    ID,
     MADE_ON,
     TIPS
 FROM RESTAURANT_ORDERS;
@@ -28,7 +28,7 @@ FROM WAITERS W
 INNER JOIN PEOPLE P ON W.ID = P.ID;
 
 -- Среднее между заказом и подачей (надо проверить)
-SELECT ROUND(AVG((S.SERVED_ON - O.MADE_ON) * 24 * 60), 2) AS avg_minutes_to_serve
+SELECT ROUND(AVG((S.SERVED_ON - O.MADE_ON) * 24 * 60), 2) AS "avg_minutes_to_serve"
 FROM TABLE_SERVICE S
 INNER JOIN RESTAURANT_ORDERS O ON S.ORDER_ID = O.ID
 WHERE S.SERVED_ON IS NOT NULL;
