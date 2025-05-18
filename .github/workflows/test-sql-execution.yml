@@ -23,14 +23,19 @@ jobs:
       - name: 🕒 Wait for Oracle to initialize
         run: sleep 40  # Oracle XE поднимается медленно
 
+      - name: 📥 Copy SQL files into container
+        run: |
+          docker_id=$(docker ps -q --filter ancestor=gvenzl/oracle-xe:21-slim)
+          docker cp sql/. $docker_id:/sql
+
       - name: 🧪 Run SQL files manually (strict order)
         run: |
           docker_id=$(docker ps -q --filter ancestor=gvenzl/oracle-xe:21-slim)
           echo "🟢 Running: create_tables.sql"
-          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat sql/create_tables.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/create_tables.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
 
           echo "🟢 Running: insert_values.sql"
-          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat sql/insert_values.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/insert_values.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
 
           echo "🟢 Running: queries.sql"
-          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat sql/queries.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
+          docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/queries.sql >> temp.sql && sqlplus system/oracle@XE @temp.sql"
