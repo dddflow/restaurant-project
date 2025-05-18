@@ -1,0 +1,23 @@
+name: 🚫 Block Direct Push to Main
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  prevent-direct-push:
+    runs-on: ubuntu-latest
+    if: github.event.pusher.name != 'web-flow'
+    steps:
+      - name: 🔍 Log user who attempted direct push
+        run: |
+          echo "🚨 Direct push attempt detected!"
+          echo "👤 Pusher: ${{ github.event.pusher.name }}"
+          echo "💬 Commit message: ${{ github.event.head_commit.message }}"
+          echo "🔗 Compare URL: ${{ github.event.compare }}"
+          
+      - name: ❌ Cancel direct push to main
+        run: |
+          echo "⛔ Direct push to 'main' is blocked. Please use a pull request."
+          exit 1
