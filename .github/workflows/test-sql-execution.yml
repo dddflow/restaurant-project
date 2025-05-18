@@ -9,7 +9,7 @@ jobs:
 
     services:
       oracle:
-        image: oracleinanutshell/oracle-xe-11g
+        image: gvenzl/oracle-xe:21-slim
         ports:
           - 1521:1521
         options: >-
