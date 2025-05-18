@@ -226,7 +226,6 @@ BEGIN
             WHERE id = rec.ingredient_id;
         END LOOP;
 END;
-/
 
 
 COMMIT;
