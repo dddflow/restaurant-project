@@ -34,13 +34,14 @@ jobs:
 
           run_and_log() {
             SQL_FILE=$1
-            LOG_FILE=/sql/${SQL_FILE%.sql}.log
+            LOG_FILE="${SQL_FILE%.sql}.log"
             echo "[$(date)] 🟢 Running: $SQL_FILE"
-            docker exec $docker_id bash -c "echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && cat /sql/create_tables.sql >> temp.sql && sqlplus test/test@XE @temp.sql"              echo 'WHENEVER SQLERROR EXIT SQL.SQLCODE;' > temp.sql && \
-              cat /sql/$SQL_FILE >> temp.sql && \
-              sqlplus -s system/oracle@XE @temp.sql \
-            " 2>&1 | tee -a ${SQL_FILE%.sql}.log
-            echo "[$(date)] 📝 Log for $SQL_FILE saved to ${SQL_FILE%.sql}.log"
+            docker exec $docker_id bash -c '
+              echo "WHENEVER SQLERROR EXIT SQL.SQLCODE;" > temp.sql
+              cat /sql/'$SQL_FILE' >> temp.sql
+              sqlplus -s system/testpass@XE @temp.sql
+            ' 2>&1 | tee -a $LOG_FILE
+            echo "[$(date)] 📝 Log for $SQL_FILE saved to $LOG_FILE"
           }
 
           run_and_log create_tables.sql
