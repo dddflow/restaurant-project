@@ -42,22 +42,6 @@ SELECT
 FROM INGREDIENTS
 WHERE ID = 201;
 
--- Она используется в блюде Карбонара
-SELECT
-    DISH_ID,
-    INGREDIENT_ID,
-    QUANTITY_NEEDED
-FROM DISH_INGREDIENTS
-WHERE DISH_ID = 10;
-
--- В карбонаре используется 0.1 пасты, значит должно списаться 0.2 из таблицы ингридиентов
-SELECT
-    ID,
-    INGREDIENT_NAME,
-    QUANTITY
-FROM INGREDIENTS
-WHERE ID = 201;
-
 --проверяю новый триггер trg_check_ingredient_stock
 INSERT INTO RESTAURANT_ORDERS (ID, CUSTOMER_ID, WAITER_ID, MADE_ON, TIPS)
 VALUES (6003, 1001, 2001, SYSDATE, 2.00);
@@ -65,3 +49,41 @@ VALUES (6003, 1001, 2001, SYSDATE, 2.00);
 -- Добавляем 25 карбонары в заказ
 INSERT INTO DISHES_TO_ORDERS (ORDER_ID, DISH_ID, QUANTITY)
 VALUES (6003, 10, 25);
+
+-- теперь карбонары 12.10
+SELECT
+    ID,
+    INGREDIENT_NAME,
+    QUANTITY
+FROM INGREDIENTS
+WHERE ID = 201;
+
+-- SQL QUERIES FOR THE REPORT
+
+--Shows the 5 most popular dishes in terms of quantity ordered.
+SELECT
+    D.DISH_NAME,
+    SUM(DTO.QUANTITY) AS TOTAL_ORDERED
+FROM DISHES_TO_ORDERS DTO
+INNER JOIN DISHES D ON DTO.DISH_ID = D.ID
+GROUP BY D.DISH_NAME
+ORDER BY TOTAL_ORDERED DESC
+FETCH FIRST 5 ROWS ONLY;
+
+-- Ranks all waiters by the total amount of tips they have received.
+SELECT
+    P.PERSON_NAME AS WAITER_NAME,
+    SUM(RO.TIPS) AS TOTAL_TIPS
+FROM RESTAURANT_ORDERS RO
+INNER JOIN WAITERS W ON RO.WAITER_ID = W.ID
+INNER JOIN PEOPLE P ON W.ID = P.ID
+GROUP BY P.PERSON_NAME
+ORDER BY TOTAL_TIPS DESC;
+
+-- Calculates the average number of minutes it takes to serve an order.
+SELECT ROUND(AVG((S.SERVED_ON - RO.MADE_ON) * 24 * 60), 2) AS AVG_MINUTES
+FROM TABLE_SERVICE S
+INNER JOIN RESTAURANT_ORDERS RO ON S.ORDER_ID = RO.ID
+WHERE S.SERVED_ON IS NOT NULL;
+
+-- Надо добавить еще 2 запроса использующие операции с множествами!
