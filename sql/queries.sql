@@ -61,25 +61,29 @@ WHERE ID = 201;
 -- SQL QUERIES FOR THE REPORT
 
 --Shows the 5 most popular dishes in terms of quantity ordered.
-SELECT d.dish_name, SUM(dto.quantity) AS total_ordered
-FROM dishes_to_orders dto
-JOIN dishes d ON dto.dish_id = d.id
-GROUP BY d.dish_name
-ORDER BY total_ordered DESC
+SELECT
+    D.DISH_NAME,
+    SUM(DTO.QUANTITY) AS TOTAL_ORDERED
+FROM DISHES_TO_ORDERS DTO
+INNER JOIN DISHES D ON DTO.DISH_ID = D.ID
+GROUP BY D.DISH_NAME
+ORDER BY TOTAL_ORDERED DESC
 FETCH FIRST 5 ROWS ONLY;
 
 -- Ranks all waiters by the total amount of tips they have received.
-SELECT p.person_name AS waiter_name, SUM(ro.tips) AS total_tips
-FROM restaurant_orders ro
-JOIN waiters w ON ro.waiter_id = w.id
-JOIN people p ON w.id = p.id
-GROUP BY p.person_name
-ORDER BY total_tips DESC;
+SELECT
+    P.PERSON_NAME AS WAITER_NAME,
+    SUM(RO.TIPS) AS TOTAL_TIPS
+FROM RESTAURANT_ORDERS RO
+INNER JOIN WAITERS W ON RO.WAITER_ID = W.ID
+INNER JOIN PEOPLE P ON W.ID = P.ID
+GROUP BY P.PERSON_NAME
+ORDER BY TOTAL_TIPS DESC;
 
 -- Calculates the average number of minutes it takes to serve an order.
-SELECT ROUND(AVG((s.served_on - ro.made_on) * 24 * 60), 2) AS avg_minutes
-FROM table_service s
-JOIN restaurant_orders ro ON s.order_id = ro.id
-WHERE s.served_on IS NOT NULL;
+SELECT ROUND(AVG((S.SERVED_ON - RO.MADE_ON) * 24 * 60), 2) AS AVG_MINUTES
+FROM TABLE_SERVICE S
+INNER JOIN RESTAURANT_ORDERS RO ON S.ORDER_ID = RO.ID
+WHERE S.SERVED_ON IS NOT NULL;
 
 -- Надо добавить еще 2 запроса использующие операции с множествами!
