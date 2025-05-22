@@ -200,4 +200,42 @@ BEGIN
     END LOOP;
 END;
 
+-- View for derived attribute "status" of the order
+CREATE OR REPLACE VIEW ORDER_STATUS_VIEW AS
+SELECT
+  ORDER_ID,
+  TABLE_ID,
+  SERVED_ON,
+  CASE
+    WHEN SERVED_ON IS NULL THEN 'Pending'
+    ELSE 'Served'
+  END AS STATUS
+FROM TABLE_SERVICE;
+
+-- View for the derived attribute "TotalPrice" for the Order
+CREATE OR REPLACE VIEW ORDER_TOTAL_PRICE_VIEW AS
+SELECT
+    ro.id AS order_id,
+    ro.customer_id,
+    ro.waiter_id,
+    ro.made_on,
+    ro.tips,
+    SUM(dto.quantity * d.price) AS original_price,
+    c.discount,
+    ROUND(
+        SUM(dto.quantity * d.price) * (1 - c.discount / 100),
+        2
+    ) AS discounted_price
+FROM restaurant_orders ro
+JOIN dishes_to_orders dto ON ro.id = dto.order_id
+JOIN dishes d ON dto.dish_id = d.id
+JOIN customers c ON ro.customer_id = c.id
+GROUP BY
+    ro.id, ro.customer_id, ro.waiter_id, ro.made_on, ro.tips, c.discount;
+
+
+
+
+
+
 COMMIT;
