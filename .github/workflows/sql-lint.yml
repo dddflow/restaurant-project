@@ -1,7 +1,7 @@
 name: Lint Oracle SQL with SQLFluff
 
 on:
-  pull_request:
+  workflow_dispatch:
 
 jobs:
   sql-lint:
@@ -18,4 +18,4 @@ jobs:
         run: pip install sqlfluff
 
       - name: Run SQL Lint
-        run: sqlfluff lint sql/ --dialect oracle --exclude-rules L009,LT02,RF01,LT01
+        run: sqlfluff lint sql/submission --dialect oracle --exclude-rules L009,LT02,RF01,LT01

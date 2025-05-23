@@ -86,4 +86,9 @@ FROM TABLE_SERVICE S
 INNER JOIN RESTAURANT_ORDERS RO ON S.ORDER_ID = RO.ID
 WHERE S.SERVED_ON IS NOT NULL;
 
--- Надо добавить еще 2 запроса использующие операции с множествами!
+-- get customers that had made order but didn't leave any review
+SELECT DISTINCT O.CUSTOMER_ID
+FROM RESTAURANT_ORDERS O
+MINUS
+SELECT DISTINCT R.CID
+FROM REVIEWS R
