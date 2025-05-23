@@ -36,12 +36,12 @@ CREATE TABLE CUSTOMERS (
 
 
 CREATE TABLE REVIEWS (
-    ID NUMBER,
+    CUSTOMER_ID NUMBER,
     REVIEWED_ON DATE NOT NULL,
     RATING NUMBER(1) NOT NULL,
     REVIEW VARCHAR2(255),
-    CONSTRAINT PK_REVIEWS PRIMARY KEY (ID, REVIEWED_ON),
-    CONSTRAINT FK_REVIEWS_CUSTOMERS FOREIGN KEY (ID) REFERENCES CUSTOMERS (ID),
+    CONSTRAINT PK_REVIEWS PRIMARY KEY (CUSTOMER_ID, REVIEWED_ON),
+    CONSTRAINT FK_REVIEWS_CUSTOMERS FOREIGN KEY (CUSTOMER_ID) REFERENCES CUSTOMERS (ID),
     CONSTRAINT CHK_REVIEWS_RATING CHECK (RATING BETWEEN 1 AND 5)
 );
 
@@ -215,22 +215,27 @@ FROM TABLE_SERVICE;
 -- View for the derived attribute "TotalPrice" for the Order
 CREATE OR REPLACE VIEW ORDER_TOTAL_PRICE_VIEW AS
 SELECT
-    RO.ID AS ORDER_ID,
-    RO.CUSTOMER_ID,
-    RO.WAITER_ID,
-    RO.MADE_ON,
-    RO.TIPS,
-    C.DISCOUNT,
-    SUM(DTO.QUANTITY * D.PRICE) AS ORIGINAL_PRICE,
+    ro.id AS order_id,
+    ro.customer_id,
+    ro.waiter_id,
+    ro.made_on,
+    ro.tips,
+    SUM(dto.quantity * d.price) AS original_price,
+    c.discount,
     ROUND(
-        SUM(DTO.QUANTITY * D.PRICE) * (1 - C.DISCOUNT / 100),
+        SUM(dto.quantity * d.price) * (1 - c.discount / 100),
         2
-    ) AS DISCOUNTED_PRICE
-FROM RESTAURANT_ORDERS RO
-INNER JOIN DISHES_TO_ORDERS DTO ON RO.ID = DTO.ORDER_ID
-INNER JOIN DISHES D ON DTO.DISH_ID = D.ID
-INNER JOIN CUSTOMERS C ON RO.CUSTOMER_ID = C.ID
+    ) AS discounted_price
+FROM restaurant_orders ro
+JOIN dishes_to_orders dto ON ro.id = dto.order_id
+JOIN dishes d ON dto.dish_id = d.id
+JOIN customers c ON ro.customer_id = c.id
 GROUP BY
-    RO.ID, RO.CUSTOMER_ID, RO.WAITER_ID, RO.MADE_ON, RO.TIPS, C.DISCOUNT;
+    ro.id, ro.customer_id, ro.waiter_id, ro.made_on, ro.tips, c.discount;
+
+
+
+
+
 
 COMMIT;

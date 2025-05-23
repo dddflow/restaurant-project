@@ -1,6 +1,7 @@
 [sqlfluff]
 dialect = oracle
 max_line_length = 200
+large_file_skip_byte_limit = 0
 
 # Правило: ключевые слова должны быть ЗАГЛАВНЫМИ
 [sqlfluff:rules:capitalisation.keywords]
