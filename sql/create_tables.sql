@@ -201,16 +201,23 @@ BEGIN
 END;
 
 -- View for derived attribute "status" of the order
-CREATE OR REPLACE VIEW ORDER_STATUS_VIEW AS
+CREATE OR REPLACE VIEW OrderStatusView AS
 SELECT
-  ORDER_ID,
-  TABLE_ID,
-  SERVED_ON,
-  CASE
-    WHEN SERVED_ON IS NULL THEN 'Pending'
-    ELSE 'Served'
-  END AS STATUS
-FROM TABLE_SERVICE;
+    RO.ID AS ORDERID,
+    RO.CUSTOMER_ID AS CUSTOMERID,
+    Ro.WAITER_ID AS WAITERID,
+    Ro.MADE_ON AS MADEON,
+    Ro.TIPS AS TIPS,
+    CASE
+        WHEN NOT EXISTS (
+            SELECT 1
+            FROM TABLE_SERVICE TS
+            WHERE TS.ORDER_ID = RO.ID
+        ) THEN 'Pending'
+        ELSE 'Served'
+    END AS STATUS
+FROM RESTAURANT_ORDERS RO;
+
 
 -- View for the derived attribute "TotalPrice" for the Order
 CREATE OR REPLACE VIEW ORDER_TOTAL_PRICE_VIEW AS
